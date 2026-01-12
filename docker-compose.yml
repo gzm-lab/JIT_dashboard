@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: jit_bi_app
+    ports:
+      - "8080:8080"
+    volumes:
+      # Volume pour les données de l'agent (persistant)
+      - ./agent/data:/app/agent/data
+      # Volume pour les runs DS-STAR (persistant)
+      - ./agent/runs:/app/agent/runs
+      # Volume pour les visualisations générées (temporaire)
+      - ./output:/app/output
+      # Volume pour le code (développement) - à commenter en production
+      - ./app:/app/app
+      - ./agent:/app/agent
+    environment:
+      - FLASK_APP=app/main.py
+      - FLASK_ENV=development
+    restart: unless-stopped

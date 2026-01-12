@@ -1,0 +1,31 @@
+# Configuration for DS-STAR Agent
+# À COMPLÉTER AVEC TES PARAMÈTRES
+
+# Model configuration
+model_name: 'gemini-1.5-flash'  # ou 'gpt-4', 'ollama/llama3', etc.
+
+# API Keys (tu peux aussi les mettre dans .env)
+# api_key: 'your-api-key-here'
+
+# Pipeline settings
+max_refinement_rounds: 5
+interactive: false
+auto_debug: true
+debug_attempts: 3
+execution_timeout: 60
+preserve_artifacts: true
+
+# Directory configuration
+runs_dir: '/app/agent/runs'
+data_dir: '/app/agent/data'
+code_library_dir: '/app/agent/code_library'
+
+# Optional: Configure specific models for different agents
+# agent_models:
+#   PLANNER: 'gpt-4'
+#   CODER: 'gemini-1.5-pro'
+#   VERIFIER: 'gemini-1.5-flash'
+#   ANALYZER: 'gemini-1.5-flash'
+#   ROUTER: 'gemini-1.5-flash'
+#   DEBUGGER: 'gemini-1.5-flash'
+#   FINALYZER: 'gemini-1.5-flash'

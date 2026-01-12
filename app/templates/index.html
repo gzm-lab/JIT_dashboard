@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JIT BI - Visualisation de données</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête -->
+        <header>
+            <h1>JIT BI</h1>
+            <p class="subtitle">Posez vos questions, visualisez vos données</p>
+        </header>
+
+        <!-- Zone principale -->
+        <main>
+            <!-- Zone de visualisation -->
+            <div class="visualization-container">
+                <div id="placeholder" class="placeholder">
+                    <svg width="100" height="100" viewBox="0 0 100 100">
+                        <rect x="10" y="60" width="15" height="30" fill="#4A90E2" opacity="0.6"/>
+                        <rect x="30" y="40" width="15" height="50" fill="#4A90E2" opacity="0.7"/>
+                        <rect x="50" y="20" width="15" height="70" fill="#4A90E2" opacity="0.8"/>
+                        <rect x="70" y="35" width="15" height="55" fill="#4A90E2" opacity="0.9"/>
+                    </svg>
+                    <p>Votre visualisation apparaîtra ici</p>
+                </div>
+                <img id="visualization" class="visualization-image" style="display: none;" alt="Visualisation">
+                <div id="loading" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Génération de la visualisation...</p>
+                </div>
+            </div>
+
+            <!-- Zone de chat -->
+            <div class="chat-container">
+                <div id="chat-messages" class="chat-messages">
+                    <!-- Les messages apparaîtront ici -->
+                </div>
+                <form id="chat-form" class="chat-input-container">
+                    <input 
+                        type="text" 
+                        id="question-input" 
+                        class="chat-input" 
+                        placeholder="Posez votre question..."
+                        autocomplete="off"
+                        required
+                    >
+                    <button type="submit" class="send-button">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </main>
+
+        <!-- Zone d'erreur -->
+        <div id="error-container" class="error-container" style="display: none;">
+            <div class="error-message">
+                <span class="error-icon">⚠️</span>
+                <span id="error-text"></span>
+                <button class="error-close" onclick="closeError()">×</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

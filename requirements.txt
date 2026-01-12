@@ -1,0 +1,18 @@
+Flask==3.0.0
+Flask-CORS==4.0.0
+matplotlib==3.8.2
+plotly==5.18.0
+seaborn==0.13.0
+pandas==2.1.4
+numpy==1.26.2
+python-dotenv==1.0.0
+
+# DS-STAR dependencies
+google-generativeai>=0.8.0
+pydantic>=2.12.0
+PyYAML>=6.0
+tqdm>=4.67.0
+requests>=2.32.0
+openai>=2.8.1
+openpyxl>=3.1.5
+ollama>=0.6.1
