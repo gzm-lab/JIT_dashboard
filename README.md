@@ -1,5 +1,7 @@
 # 📊 JIT Dashboard — Conversational Business Intelligence
 
+> 🧒 **In plain English:** You upload a spreadsheet with numbers, ask a question like "show me the best-selling products", and the app draws a chart for you automatically — no Excel skills needed!
+
 A **natural language BI dashboard** powered by a multi-agent AI pipeline. Ask a question about your data in plain English (or French), and the agent automatically generates, executes, and returns a visualization.
 
 Powered by **DS-STAR** — a multi-agent LLM pipeline (Gemini, OpenAI, or local Ollama) that autonomously analyzes, plans, codes, verifies, and self-debugs.
