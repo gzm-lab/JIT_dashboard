@@ -1,81 +1,166 @@
-# JIT_BI
+# 📊 JIT Dashboard — BI Conversationnelle par IA
 
-Application web pour générer des visualisations de données via un agent conversationnel.
+Un tableau de bord **Business Intelligence** piloté par le langage naturel. Pose une question sur tes données en français (ou anglais), l'agent IA génère et exécute automatiquement le code de visualisation, et renvoie un graphique prêt à l'emploi.
 
-## Structure du Projet
+Propulsé par **DS-STAR** — un pipeline multi-agents LLM (Gemini, OpenAI ou Ollama local) qui analyse, planifie, code, vérifie et débogue de façon autonome.
+
+## ✨ Fonctionnalités
+
+- 💬 **Interface conversationnelle** — pose tes questions en langage naturel
+- 🤖 **Pipeline multi-agents DS-STAR** — 7 agents spécialisés (Analyzer, Planner, Coder, Verifier, Router, Debugger, Finalyzer)
+- 📈 **Visualisations automatiques** — matplotlib, plotly, seaborn
+- 📂 **Multi-formats** — CSV, Excel (.xlsx), JSON
+- 🔄 **Auto-debug** — l'agent corrige ses propres erreurs de code (jusqu'à 3 tentatives)
+- 🐳 **Dockerisé** — déploiement en une commande
+
+## 🧠 Architecture
 
 ```
-JIT_BI/
-├── app/                    # Application Flask
-│   ├── main.py            # Point d'entrée Flask
-│   ├── static/            # Assets statiques (CSS, JS)
-│   └── templates/         # Templates HTML
-├── agent/                 # Module agent
-│   ├── agent_wrapper.py   # Interface avec l'agent
-│   └── data/              # Données pour l'agent
-├── output/                # Visualisations générées
-├── Dockerfile            # Image Docker
-├── docker-compose.yml    # Orchestration
-└── requirements.txt      # Dépendances Python
+Utilisateur (question)
+        ↓
+   Flask API (/ask)
+        ↓
+  AgentWrapper
+        ↓
+  ┌─────────────────────────────────────┐
+  │        DS-STAR Pipeline             │
+  │                                     │
+  │  ANALYZER → analyse les données     │
+  │  PLANNER  → planifie les étapes     │
+  │  CODER    → génère le code Python   │
+  │  VERIFIER → vérifie le résultat     │
+  │  ROUTER   → ajuste le plan          │
+  │  DEBUGGER → corrige les erreurs     │
+  │  FINALYZER→ produit l'output final  │
+  └─────────────────────────────────────┘
+        ↓
+  exec() → image PNG générée
+        ↓
+  URL renvoyée → affichage dans le navigateur
 ```
 
-## Backend Implémenté
+## 🚀 Quick Start
 
-### Endpoints API
-
-- **GET /** : Page principale
-- **POST /ask** : Envoie une question, retourne une visualisation
-  - Body: `{ "question": "..." }`
-  - Response: `{ "status": "success", "image_url": "/output/viz_xxx.png" }`
-- **GET /output/<filename>** : Sert les images générées
-- **GET /health** : Santé de l'application
-
-### Agent Wrapper
-
-Le fichier `agent/agent_wrapper.py` contient une classe `AgentWrapper` à adapter avec ton agent existant :
-
-```python
-def generate_visualization_code(self, question: str) -> str:
-    # TODO: Remplacer par ton agent réel
-    # code = self.agent.generate_code(question)
-    # return code
-```
-
-Le code généré doit utiliser la variable `output_path` pour sauvegarder l'image.
-
-## Installation et Lancement
-
-### Avec Docker (recommandé)
+### Option 1 — Docker (recommandé)
 
 ```bash
-# Build
-docker-compose build
+git clone https://github.com/gzm-lab/JIT_dashboard.git
+cd JIT_dashboard
 
-# Lancer
-docker-compose up
+# Configure les variables d'environnement
+cp agent/.env.template agent/.env
+# Édite agent/.env avec ta clé API (Gemini, OpenAI, ou config Ollama)
 
-# Accès
-http://localhost:8080
+docker compose up -d
 ```
 
-### Sans Docker (développement)
+L'interface est disponible sur **http://localhost:5000**
+
+### Option 2 — Local
 
 ```bash
-# Installer les dépendances
+git clone https://github.com/gzm-lab/JIT_dashboard.git
+cd JIT_dashboard
+
 pip install -r requirements.txt
 
-# Lancer
+# Configure
+cp agent/.env.template agent/.env
+# Édite agent/.env
+
+# Lance
 python app/main.py
 ```
 
-## Prochaines Étapes
+## ⚙️ Configuration
 
-1. **Intégrer ton agent** : Modifier `agent/agent_wrapper.py`
-2. **Ajouter tes données** : Placer les fichiers dans `agent/data/`
-3. **Frontend** : Créer l'interface utilisateur (chat + visualisation)
+Édite `agent/.env` et `agent/config.yaml` :
 
-## Configuration
+```env
+# Choix du provider LLM
+GOOGLE_API_KEY=ta_cle_gemini      # Pour Gemini (défaut)
+OPENAI_API_KEY=ta_cle_openai      # Pour GPT-4
+# Ollama : aucune clé requise, configure OLLAMA_HOST dans config.yaml
+```
 
-- Port : 8080
-- Output : `./output/`
-- Data : `./agent/data/`
+```yaml
+# agent/config.yaml
+model: gemini-1.5-flash   # ou gpt-4, ollama/llama3
+
+settings:
+  max_refinement_rounds: 5
+  auto_debug: true
+  debug_attempts: 3
+  execution_timeout: 60
+```
+
+### Providers LLM supportés
+
+| Provider | Modèle | Variable |
+|---|---|---|
+| Google Gemini | `gemini-1.5-flash` (défaut) | `GOOGLE_API_KEY` |
+| OpenAI | `gpt-4`, `gpt-4o` | `OPENAI_API_KEY` |
+| Ollama (local) | `ollama/llama3`, etc. | aucune |
+
+## 📡 API
+
+| Méthode | Route | Description |
+|---|---|---|
+| `GET` | `/` | Interface web principale |
+| `POST` | `/ask` | Envoie une question → reçoit l'URL du graphique |
+| `GET` | `/output/<filename>` | Télécharge/affiche une image générée |
+| `GET` | `/health` | Vérification de santé |
+
+**Exemple `/ask` :**
+
+```bash
+curl -X POST http://localhost:5000/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "Montre-moi les ventes par mois sous forme de graphique à barres"}'
+
+# Réponse
+{"image_url": "/output/chart_abc123.png"}
+```
+
+## 📂 Structure
+
+```
+JIT_dashboard/
+├── app/
+│   ├── main.py              # Flask — API et serveur web
+│   └── templates/index.html # Interface chat
+├── agent/
+│   ├── dsstar.py            # Pipeline DS-STAR multi-agents (cœur du projet)
+│   ├── agent_wrapper.py     # Bridge Flask ↔ DS-STAR
+│   ├── config.yaml          # Configuration LLM et pipeline
+│   ├── prompt.yaml          # Prompts des agents
+│   ├── provider.py          # Abstraction des providers LLM
+│   └── data/                # Dossier de données (CSV, XLSX, JSON)
+│       └── test.csv         # Exemple de données
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── SETUP_DSSTAR.md          # Guide de configuration DS-STAR
+└── architecture.md          # Documentation d'architecture détaillée
+```
+
+## 📊 Ajouter ses données
+
+Dépose tes fichiers de données dans `agent/data/` :
+
+```bash
+cp mes_donnees.csv agent/data/
+cp rapport_ventes.xlsx agent/data/
+```
+
+L'agent détecte automatiquement tous les fichiers CSV, XLSX et JSON présents dans ce dossier.
+
+## 🛠️ Stack technique
+
+| Composant | Technologie |
+|---|---|
+| Backend | Python + Flask |
+| LLM | Gemini 1.5 Flash / GPT-4 / Ollama |
+| Visualisation | matplotlib, plotly, seaborn |
+| Data | pandas, numpy, openpyxl |
+| Conteneurisation | Docker + Docker Compose |
