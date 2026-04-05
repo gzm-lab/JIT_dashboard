@@ -1,60 +1,60 @@
-# 📊 JIT Dashboard — BI Conversationnelle par IA
+# 📊 JIT Dashboard — Conversational Business Intelligence
 
-Un tableau de bord **Business Intelligence** piloté par le langage naturel. Pose une question sur tes données en français (ou anglais), l'agent IA génère et exécute automatiquement le code de visualisation, et renvoie un graphique prêt à l'emploi.
+A **natural language BI dashboard** powered by a multi-agent AI pipeline. Ask a question about your data in plain English (or French), and the agent automatically generates, executes, and returns a visualization.
 
-Propulsé par **DS-STAR** — un pipeline multi-agents LLM (Gemini, OpenAI ou Ollama local) qui analyse, planifie, code, vérifie et débogue de façon autonome.
+Powered by **DS-STAR** — a multi-agent LLM pipeline (Gemini, OpenAI, or local Ollama) that autonomously analyzes, plans, codes, verifies, and self-debugs.
 
-## ✨ Fonctionnalités
+## ✨ Features
 
-- 💬 **Interface conversationnelle** — pose tes questions en langage naturel
-- 🤖 **Pipeline multi-agents DS-STAR** — 7 agents spécialisés (Analyzer, Planner, Coder, Verifier, Router, Debugger, Finalyzer)
-- 📈 **Visualisations automatiques** — matplotlib, plotly, seaborn
-- 📂 **Multi-formats** — CSV, Excel (.xlsx), JSON
-- 🔄 **Auto-debug** — l'agent corrige ses propres erreurs de code (jusqu'à 3 tentatives)
-- 🐳 **Dockerisé** — déploiement en une commande
+- 💬 **Conversational interface** — ask questions in plain natural language
+- 🤖 **DS-STAR multi-agent pipeline** — 7 specialized agents (Analyzer, Planner, Coder, Verifier, Router, Debugger, Finalyzer)
+- 📈 **Automatic visualizations** — matplotlib, plotly, seaborn
+- 📂 **Multi-format support** — CSV, Excel (.xlsx), JSON
+- 🔄 **Auto-debug** — the agent self-corrects its own code errors (up to 3 attempts)
+- 🐳 **Dockerized** — one-command deployment
 
 ## 🧠 Architecture
 
 ```
-Utilisateur (question)
-        ↓
-   Flask API (/ask)
-        ↓
-  AgentWrapper
-        ↓
-  ┌─────────────────────────────────────┐
-  │        DS-STAR Pipeline             │
-  │                                     │
-  │  ANALYZER → analyse les données     │
-  │  PLANNER  → planifie les étapes     │
-  │  CODER    → génère le code Python   │
-  │  VERIFIER → vérifie le résultat     │
-  │  ROUTER   → ajuste le plan          │
-  │  DEBUGGER → corrige les erreurs     │
-  │  FINALYZER→ produit l'output final  │
-  └─────────────────────────────────────┘
-        ↓
-  exec() → image PNG générée
-        ↓
-  URL renvoyée → affichage dans le navigateur
+User (question)
+      ↓
+ Flask API (/ask)
+      ↓
+ AgentWrapper
+      ↓
+ ┌─────────────────────────────────────┐
+ │         DS-STAR Pipeline            │
+ │                                     │
+ │  ANALYZER  → understands the data   │
+ │  PLANNER   → plans analysis steps   │
+ │  CODER     → generates Python code  │
+ │  VERIFIER  → checks the result      │
+ │  ROUTER    → adjusts the plan       │
+ │  DEBUGGER  → fixes code errors      │
+ │  FINALYZER → produces final output  │
+ └─────────────────────────────────────┘
+      ↓
+ exec() → PNG image generated
+      ↓
+ URL returned → displayed in browser
 ```
 
 ## 🚀 Quick Start
 
-### Option 1 — Docker (recommandé)
+### Option 1 — Docker (recommended)
 
 ```bash
 git clone https://github.com/gzm-lab/JIT_dashboard.git
 cd JIT_dashboard
 
-# Configure les variables d'environnement
+# Set up environment variables
 cp agent/.env.template agent/.env
-# Édite agent/.env avec ta clé API (Gemini, OpenAI, ou config Ollama)
+# Edit agent/.env with your API key (Gemini, OpenAI, or Ollama config)
 
 docker compose up -d
 ```
 
-L'interface est disponible sur **http://localhost:5000**
+The interface is available at **http://localhost:5000**
 
 ### Option 2 — Local
 
@@ -66,26 +66,26 @@ pip install -r requirements.txt
 
 # Configure
 cp agent/.env.template agent/.env
-# Édite agent/.env
+# Edit agent/.env
 
-# Lance
+# Run
 python app/main.py
 ```
 
 ## ⚙️ Configuration
 
-Édite `agent/.env` et `agent/config.yaml` :
+Edit `agent/.env` and `agent/config.yaml`:
 
 ```env
-# Choix du provider LLM
-GOOGLE_API_KEY=ta_cle_gemini      # Pour Gemini (défaut)
-OPENAI_API_KEY=ta_cle_openai      # Pour GPT-4
-# Ollama : aucune clé requise, configure OLLAMA_HOST dans config.yaml
+# LLM provider selection
+GOOGLE_API_KEY=your_gemini_key      # For Gemini (default)
+OPENAI_API_KEY=your_openai_key      # For GPT-4
+# Ollama: no key required, configure OLLAMA_HOST in config.yaml
 ```
 
 ```yaml
 # agent/config.yaml
-model: gemini-1.5-flash   # ou gpt-4, ollama/llama3
+model: gemini-1.5-flash   # or gpt-4, ollama/llama3
 
 settings:
   max_refinement_rounds: 5
@@ -94,73 +94,73 @@ settings:
   execution_timeout: 60
 ```
 
-### Providers LLM supportés
+### Supported LLM Providers
 
-| Provider | Modèle | Variable |
+| Provider | Model | Variable |
 |---|---|---|
-| Google Gemini | `gemini-1.5-flash` (défaut) | `GOOGLE_API_KEY` |
+| Google Gemini | `gemini-1.5-flash` (default) | `GOOGLE_API_KEY` |
 | OpenAI | `gpt-4`, `gpt-4o` | `OPENAI_API_KEY` |
-| Ollama (local) | `ollama/llama3`, etc. | aucune |
+| Ollama (local) | `ollama/llama3`, etc. | none required |
 
 ## 📡 API
 
-| Méthode | Route | Description |
+| Method | Route | Description |
 |---|---|---|
-| `GET` | `/` | Interface web principale |
-| `POST` | `/ask` | Envoie une question → reçoit l'URL du graphique |
-| `GET` | `/output/<filename>` | Télécharge/affiche une image générée |
-| `GET` | `/health` | Vérification de santé |
+| `GET` | `/` | Main web interface |
+| `POST` | `/ask` | Send a question → receive chart URL |
+| `GET` | `/output/<filename>` | Download/display a generated image |
+| `GET` | `/health` | Health check |
 
-**Exemple `/ask` :**
+**Example `/ask` request:**
 
 ```bash
 curl -X POST http://localhost:5000/ask \
   -H "Content-Type: application/json" \
-  -d '{"question": "Montre-moi les ventes par mois sous forme de graphique à barres"}'
+  -d '{"question": "Show me monthly sales as a bar chart"}'
 
-# Réponse
+# Response
 {"image_url": "/output/chart_abc123.png"}
 ```
 
-## 📂 Structure
+## 📂 Project Structure
 
 ```
 JIT_dashboard/
 ├── app/
-│   ├── main.py              # Flask — API et serveur web
-│   └── templates/index.html # Interface chat
+│   ├── main.py              # Flask — API and web server
+│   └── templates/index.html # Chat interface
 ├── agent/
-│   ├── dsstar.py            # Pipeline DS-STAR multi-agents (cœur du projet)
-│   ├── agent_wrapper.py     # Bridge Flask ↔ DS-STAR
-│   ├── config.yaml          # Configuration LLM et pipeline
-│   ├── prompt.yaml          # Prompts des agents
-│   ├── provider.py          # Abstraction des providers LLM
-│   └── data/                # Dossier de données (CSV, XLSX, JSON)
-│       └── test.csv         # Exemple de données
+│   ├── dsstar.py            # DS-STAR multi-agent pipeline (core)
+│   ├── agent_wrapper.py     # Flask ↔ DS-STAR bridge
+│   ├── config.yaml          # LLM and pipeline configuration
+│   ├── prompt.yaml          # Agent prompts
+│   ├── provider.py          # LLM provider abstraction
+│   └── data/                # Data folder (CSV, XLSX, JSON)
+│       └── test.csv         # Sample dataset
 ├── Dockerfile
 ├── docker-compose.yml
 ├── requirements.txt
-├── SETUP_DSSTAR.md          # Guide de configuration DS-STAR
-└── architecture.md          # Documentation d'architecture détaillée
+├── SETUP_DSSTAR.md          # DS-STAR setup guide
+└── architecture.md          # Detailed architecture documentation
 ```
 
-## 📊 Ajouter ses données
+## 📊 Adding Your Data
 
-Dépose tes fichiers de données dans `agent/data/` :
+Drop your data files into `agent/data/`:
 
 ```bash
-cp mes_donnees.csv agent/data/
-cp rapport_ventes.xlsx agent/data/
+cp my_data.csv agent/data/
+cp sales_report.xlsx agent/data/
 ```
 
-L'agent détecte automatiquement tous les fichiers CSV, XLSX et JSON présents dans ce dossier.
+The agent automatically detects all CSV, XLSX, and JSON files in that folder.
 
-## 🛠️ Stack technique
+## 🛠️ Tech Stack
 
-| Composant | Technologie |
+| Component | Technology |
 |---|---|
 | Backend | Python + Flask |
 | LLM | Gemini 1.5 Flash / GPT-4 / Ollama |
-| Visualisation | matplotlib, plotly, seaborn |
-| Data | pandas, numpy, openpyxl |
-| Conteneurisation | Docker + Docker Compose |
+| Visualization | matplotlib, plotly, seaborn |
+| Data processing | pandas, numpy, openpyxl |
+| Containerization | Docker + Docker Compose |
